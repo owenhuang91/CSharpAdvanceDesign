@@ -53,7 +53,7 @@ namespace CSharpAdvanceDesignTests
                 new Key() {Type = CardType.Benz, Owner = "Tom"},
             };
 
-            var pairs = JoeyZip(girls, keys, (girl, key) => $"{girl.Name}-{key.Type.ToString()}");
+            var pairs = JoeyZip(girls, keys, (girl, key) => $"{girl.Name}-{key.Type}");
 
             var expected = new[]
             {
