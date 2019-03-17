@@ -22,12 +22,11 @@ namespace CSharpAdvanceDesignTests
         private IEnumerable<int> Distinct(IEnumerable<int> numbers)
         {
             var enumerator = numbers.GetEnumerator();
-            var checkLookup = new Dictionary<int, int>();
+            var checkLookup = new HashSet<int>();
             while (enumerator.MoveNext())
             {
-                if (!checkLookup.ContainsKey(enumerator.Current))
+                if (checkLookup.Add(enumerator.Current))
                 {
-                    checkLookup.Add(enumerator.Current, enumerator.Current);
                     yield return enumerator.Current;
                 }
             }
