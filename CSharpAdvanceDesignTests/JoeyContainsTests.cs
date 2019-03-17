@@ -5,7 +5,6 @@ using System.Collections.Generic;
 namespace CSharpAdvanceDesignTests
 {
     [TestFixture]
-    [Ignore("not yet")]
     public class JoeyContainsTests
     {
         [Test]
@@ -20,14 +19,36 @@ namespace CSharpAdvanceDesignTests
 
             var joey = new Employee() { FirstName = "Joey", LastName = "Chen" };
 
-            var actual = JoeyContains(employees, joey);
+            var actual = JoeyContains(employees, joey, new EmployeeCompare());
 
             Assert.IsTrue(actual);
         }
 
-        private bool JoeyContains(IEnumerable<Employee> employees, Employee value)
+        private bool JoeyContains<TSource>(IEnumerable<TSource> employees, TSource value, IEqualityComparer<TSource> employeeCompare)
         {
-            throw new System.NotImplementedException();
+            var enumerator = employees.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (employeeCompare.Equals(value, enumerator.Current))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    internal class EmployeeCompare : IEqualityComparer<Employee>
+    {
+        public bool Equals(Employee x, Employee y)
+        {
+            return x.FirstName == y.FirstName && x.LastName == y.LastName;
+        }
+
+        public int GetHashCode(Employee obj)
+        {
+            return new { obj.FirstName, obj.LastName }.GetHashCode();
         }
     }
 }
