@@ -7,7 +7,6 @@ using System.Collections.Generic;
 namespace CSharpAdvanceDesignTests
 {
     [TestFixture()]
-    [Ignore("not yet")]
     public class JoeyConcatTests
     {
         [Test]
@@ -22,6 +21,7 @@ namespace CSharpAdvanceDesignTests
             {
                 new Employee {FirstName = "David", LastName = "Li"},
                 new Employee {FirstName = "Tom", LastName = "Wang"},
+                new Employee{FirstName = "Joey",LastName = "Wang"},
             };
 
             var actual = JoeyConcat(first, second);
@@ -31,6 +31,7 @@ namespace CSharpAdvanceDesignTests
                 new Employee {FirstName = "Joey", LastName = "Chen"},
                 new Employee {FirstName = "David", LastName = "Li"},
                 new Employee {FirstName = "Tom", LastName = "Wang"},
+                new Employee{FirstName = "Joey",LastName = "Wang"},
             };
 
             expected.ToExpectedObject().ShouldMatch(actual);
@@ -38,7 +39,16 @@ namespace CSharpAdvanceDesignTests
 
         private IEnumerable<Employee> JoeyConcat(IEnumerable<Employee> first, IEnumerable<Employee> second)
         {
-            throw new System.NotImplementedException();
+            var enumerator = first.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                yield return enumerator.Current;
+            }
+            var secondEnumerator = second.GetEnumerator();
+            while (secondEnumerator.MoveNext())
+            {
+                yield return secondEnumerator.Current;
+            }
         }
     }
 }
