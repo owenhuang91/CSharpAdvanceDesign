@@ -31,7 +31,7 @@ namespace CSharpAdvanceDesignTests
                 new Pet() {Name = "QQ", Owner = joey},
             };
 
-            var actual = JoeyJoin(employees, pets, employee1 => employee1, pet1 => pet1.Owner, (employee, pet) => $"{pet.Name}-{employee.LastName}", EqualityComparer<Employee>.Default);
+            var actual = JoeyJoin(employees, pets, employee1 => employee1, pet1 => pet1.Owner, EqualityComparer<Employee>.Default, (employee, pet) => $"{pet.Name}-{employee.LastName}");
 
             var expected = new[]
             {
@@ -49,8 +49,8 @@ namespace CSharpAdvanceDesignTests
             IEnumerable<TInner> inners,
             Func<TOuter, TKey> outerKeySelector,
             Func<TInner, TKey> innerKeySelector,
-            Func<TOuter, TInner, TResult> resultSelector,
-            IEqualityComparer<TKey> comparer)
+            IEqualityComparer<TKey> comparer,
+            Func<TOuter, TInner, TResult> resultSelector)
         {
             var outerEnumerator = outers.GetEnumerator();
             while (outerEnumerator.MoveNext())
