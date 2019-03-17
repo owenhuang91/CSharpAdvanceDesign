@@ -9,4 +9,11 @@ namespace Lab
             return model.Price - model.Cost >= 0;
         }
     }
+    public class ProductValidator2 : IValidator<Product>
+    {
+        public bool Validate(Product model)
+        {
+            return model.Price - model.Cost >= 0;
+        }
+    }
 }
