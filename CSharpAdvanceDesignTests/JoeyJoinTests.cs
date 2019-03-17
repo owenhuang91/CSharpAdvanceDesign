@@ -7,15 +7,14 @@ using System.Collections.Generic;
 namespace CSharpAdvanceDesignTests
 {
     [TestFixture]
-    [Ignore("not yet")]
     public class JoeyJoinTests
     {
         [Test]
         public void all_pets_and_owner()
         {
-            var david = new Employee { FirstName = "David", LastName = "Chen" };
+            var david = new Employee { FirstName = "David", LastName = "Li" };
             var joey = new Employee { FirstName = "Joey", LastName = "Chen" };
-            var tom = new Employee { FirstName = "Tom", LastName = "Chen" };
+            var tom = new Employee { FirstName = "Tom", LastName = "Wang" };
 
             var employees = new[]
             {
@@ -32,22 +31,38 @@ namespace CSharpAdvanceDesignTests
                 new Pet() {Name = "QQ", Owner = joey},
             };
 
-            var actual = JoeyJoin(employees, pets);
+            var actual = JoeyJoin(employees, pets, employee1 => employee1, pet1 => pet1.Owner, (employee, pet) => $"{pet.Name}-{employee.LastName}");
 
             var expected = new[]
             {
-                Tuple.Create("David", "Didi"),
-                Tuple.Create("Joey", "Lala"),
-                Tuple.Create("Joey", "QQ"),
-                Tuple.Create("Tom", "Fufu"),
+                "Didi-Li",
+                "Lala-Chen",
+                "QQ-Chen",
+                "Fufu-Wang"
             };
 
             expected.ToExpectedObject().ShouldMatch(actual);
         }
 
-        private IEnumerable<Tuple<string, string>> JoeyJoin(IEnumerable<Employee> employees, IEnumerable<Pet> pets)
+        private IEnumerable<TResult> JoeyJoin<TKey, TResult>(IEnumerable<Employee> employees, IEnumerable<Pet> pets,
+            Func<Employee, TKey> employeeKeySelector, Func<Pet, TKey> petKeySelector,
+            Func<Employee, Pet, TResult> resultSelector)
         {
-            throw new NotImplementedException();
+            var firstEnumerator = employees.GetEnumerator();
+            while (firstEnumerator.MoveNext())
+            {
+                var secondEnumerator = pets.GetEnumerator();
+                while (secondEnumerator.MoveNext())
+                {
+                    var employee = firstEnumerator.Current;
+                    var pet = secondEnumerator.Current;
+                    if (employeeKeySelector(employee).Equals(petKeySelector(pet)))
+                    {
+                        yield return resultSelector(employee, pet);
+                    }
+                }
+                secondEnumerator.Reset();
+            }
         }
     }
 }

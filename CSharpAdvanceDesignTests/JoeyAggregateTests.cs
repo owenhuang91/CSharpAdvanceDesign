@@ -34,10 +34,6 @@ namespace CSharpAdvanceDesignTests
             {
                 var current = enumerator.Current;
                 seed = func(seed, current);
-                //if (seed >= current)
-                //{
-                //    seed -= current;
-                //}
             }
 
             return seed;
