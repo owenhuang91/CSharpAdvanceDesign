@@ -31,7 +31,7 @@ namespace CSharpAdvanceDesignTests
                 new Pet() {Name = "QQ", Owner = joey},
             };
 
-            var actual = JoeyJoin(employees, pets, employee1 => employee1, pet1 => pet1.Owner, (employee, pet) => $"{pet.Name}-{employee.LastName}");
+            var actual = JoeyJoin(employees, pets, employee1 => employee1, pet1 => pet1.Owner, (employee, pet) => $"{pet.Name}-{employee.LastName}", EqualityComparer<Employee>.Default);
 
             var expected = new[]
             {
@@ -44,24 +44,29 @@ namespace CSharpAdvanceDesignTests
             expected.ToExpectedObject().ShouldMatch(actual);
         }
 
-        private IEnumerable<TResult> JoeyJoin<TKey, TResult>(IEnumerable<Employee> employees, IEnumerable<Pet> pets,
-            Func<Employee, TKey> employeeKeySelector, Func<Pet, TKey> petKeySelector,
-            Func<Employee, Pet, TResult> resultSelector)
+        private IEnumerable<TResult> JoeyJoin<TOuter, TInner, TKey, TResult>(
+            IEnumerable<TOuter> outers,
+            IEnumerable<TInner> inners,
+            Func<TOuter, TKey> outerKeySelector,
+            Func<TInner, TKey> innerKeySelector,
+            Func<TOuter, TInner, TResult> resultSelector,
+            IEqualityComparer<TKey> comparer)
         {
-            var firstEnumerator = employees.GetEnumerator();
-            while (firstEnumerator.MoveNext())
+            var outerEnumerator = outers.GetEnumerator();
+            while (outerEnumerator.MoveNext())
             {
-                var secondEnumerator = pets.GetEnumerator();
-                while (secondEnumerator.MoveNext())
+                var innerEnumerator = inners.GetEnumerator();
+                while (innerEnumerator.MoveNext())
                 {
-                    var employee = firstEnumerator.Current;
-                    var pet = secondEnumerator.Current;
-                    if (employeeKeySelector(employee).Equals(petKeySelector(pet)))
+                    var outer = outerEnumerator.Current;
+                    var inner = innerEnumerator.Current;
+
+                    if (comparer.Equals(outerKeySelector(outer), innerKeySelector(inner)))
                     {
-                        yield return resultSelector(employee, pet);
+                        yield return resultSelector(outer, inner);
                     }
                 }
-                secondEnumerator.Reset();
+                innerEnumerator.Reset();
             }
         }
     }
