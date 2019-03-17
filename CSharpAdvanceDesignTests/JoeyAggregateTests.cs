@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace CSharpAdvanceDesignTests
 {
-    [Ignore("not yet")]
     [TestFixture]
     public class JoeyAggregateTests
     {
@@ -17,16 +17,30 @@ namespace CSharpAdvanceDesignTests
                 30, 80, 20, 40, 25
             };
 
-            var actual = JoeyAggregate(drawlingList, balance);
+            //var actual = JoeyAggregate(drawlingList, balance, (seed, current) => seed >= current ? seed - current : seed);
+            var actual = JoeyAggregate(drawlingList, balance, (seed, current) => seed - (seed >= current ? current : 0));
 
             var expected = 10.91m;
 
             Assert.AreEqual(expected, actual);
         }
 
-        private decimal JoeyAggregate(IEnumerable<int> drawlingList, decimal balance)
+        //提供一個暫存值, 然後用你決定的方法來修改這個暫存值, 最後回給你這個值
+        private decimal JoeyAggregate(IEnumerable<int> drawlingList, decimal balance, Func<decimal, int, decimal> func)
         {
-            throw new System.NotImplementedException();
+            var seed = balance;
+            var enumerator = drawlingList.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                var current = enumerator.Current;
+                seed = func(seed, current);
+                //if (seed >= current)
+                //{
+                //    seed -= current;
+                //}
+            }
+
+            return seed;
         }
     }
 }
