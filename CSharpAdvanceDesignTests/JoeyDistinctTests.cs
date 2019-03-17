@@ -1,4 +1,5 @@
 ﻿using ExpectedObjects;
+using Lab.Entities;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using System.Collections.Generic;
@@ -12,24 +13,52 @@ namespace CSharpAdvanceDesignTests
         public void distinct_numbers()
         {
             var numbers = new[] { 91, 3, 91, -1 };
-            var actual = Distinct(numbers);
+            var actual = JoeyDistinct(numbers);
 
             var expected = new[] { 91, 3, -1 };
 
             expected.ToExpectedObject().ShouldMatch(actual);
         }
 
-        private IEnumerable<int> Distinct(IEnumerable<int> numbers)
+        [Test]
+        public void distinct_employees()
         {
-            var enumerator = numbers.GetEnumerator();
-            var checkLookup = new HashSet<int>();
+            var employees = new[]
+            {
+                new Employee {FirstName = "Joey", LastName = "Chen"},
+                new Employee {FirstName = "Joseph", LastName = "Chen"},
+                new Employee {FirstName = "Tom", LastName = "Li"},
+                new Employee {FirstName = "Joey", LastName = "Chen"},
+            };
+
+            var actual = JoeyDistinctWithCompare(employees, new EmployeeCompare());
+
+            var expected = new[]
+            {
+                new Employee {FirstName = "Joey", LastName = "Chen"},
+                new Employee {FirstName = "Joseph", LastName = "Chen"},
+                new Employee {FirstName = "Tom", LastName = "Li"},
+            };
+
+            expected.ToExpectedObject().ShouldMatch(actual);
+        }
+
+        private IEnumerable<TSource> JoeyDistinctWithCompare<TSource>(IEnumerable<TSource> sources, IEqualityComparer<TSource> compare)
+        {
+            var enumerator = sources.GetEnumerator();
+            var hash = new HashSet<TSource>(compare);
             while (enumerator.MoveNext())
             {
-                if (checkLookup.Add(enumerator.Current))
+                if (hash.Add(enumerator.Current))
                 {
                     yield return enumerator.Current;
                 }
             }
+        }
+
+        private IEnumerable<TSource> JoeyDistinct<TSource>(IEnumerable<TSource> numbers)
+        {
+            return JoeyDistinctWithCompare(numbers, EqualityComparer<TSource>.Default);
         }
     }
 }
