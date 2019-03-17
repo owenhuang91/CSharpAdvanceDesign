@@ -3,11 +3,11 @@ using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CSharpAdvanceDesignTests
 {
     [TestFixture()]
-    [Ignore("not yet")]
     public class JoeyCastTests
     {
         [Test]
@@ -15,14 +15,18 @@ namespace CSharpAdvanceDesignTests
         {
             var arrayList = new ArrayList { 1, "2", 3 };
 
-            void TestDelegate() => JoeyCast<int>(arrayList);
+            void TestDelegate() => JoeyCast<int>(arrayList).ToList();
 
             Assert.Throws<InvalidCastException>(TestDelegate);
         }
 
         private IEnumerable<T> JoeyCast<T>(IEnumerable source)
         {
-            throw new System.NotImplementedException();
+            var enumerator = source.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                yield return (T)enumerator.Current;
+            }
         }
     }
 }
