@@ -22,12 +22,11 @@ namespace CSharpAdvanceDesignTests
 
         private IEnumerable<int> JoeyIntersect(IEnumerable<int> first, IEnumerable<int> second)
         {
-            var firstHash = new HashSet<int>(first);
             var secondHash = new HashSet<int>(second);
-            var enumerator = firstHash.GetEnumerator();
+            var enumerator = first.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                if (!secondHash.Add(enumerator.Current))
+                if (secondHash.Remove(enumerator.Current))
                 {
                     yield return enumerator.Current;
                 }
